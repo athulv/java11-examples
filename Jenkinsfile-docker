@@ -2,46 +2,50 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('e2271c88-914b-4070-8dfc-6570573a2026') // Replace with your Jenkins credentials ID if different
+        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026' // Replace with your Jenkins credential ID
+        IMAGE_NAME = 'athulvtk/java11-examples'
     }
 
     stages {
-
         stage('Clone Repo') {
             steps {
-                git url: 'https://github.com/athulv/java11-examples.git'
+                git 'https://github.com/athulv/java11-examples.git'
             }
         }
 
         stage('Build with Maven') {
             steps {
-                dir('java11-examples') {
-                    sh 'mvn clean package'
-                }
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Prepare Docker Context') {
+            steps {
+                sh 'mkdir -p docker-build'
+                sh 'cp Dockerfile docker-build/'
+                sh 'cp target/java11-examples-1.0-SNAPSHOT-jar-with-dependencies.jar docker-build/app.jar'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                dir('java11-examples') {
-                    sh 'docker build -t athulvtk/java11-examples .'
+                dir('docker-build') {
+                    sh "docker build -t ${IMAGE_NAME} ."
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                script {
-                    withDockerRegistry([credentialsId: 'e2271c88-914b-4070-8dfc-6570573a2026', url: '']) {
-                        sh 'docker push athulvtk/java11-examples'
-                    }
+                withDockerRegistry([credentialsId: "${DOCKER_HUB_CREDENTIALS}", url: ""]) {
+                    sh "docker push ${IMAGE_NAME}"
                 }
             }
         }
 
         stage('Run Locally') {
             steps {
-                sh 'docker run --rm athulvtk/java11-examples'
+                sh "docker run --rm ${IMAGE_NAME}"
             }
         }
     }
