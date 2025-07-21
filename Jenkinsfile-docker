@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "athulvtk/java11-examples"
+        REGISTRY_CREDENTIALS = "e2271c88-914b-4070-8dfc-6570573a2026"
+    }
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/athulv/java11-examples.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                script {
+                    docker.build("${IMAGE_NAME}")
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                echo 'Pushing Docker image to Docker Hub...'
+                script {
+                    docker.withRegistry('', "${REGISTRY_CREDENTIALS}") {
+                        docker.image("${IMAGE_NAME}").push("latest")
+                    }
+                }
+            }
+        }
+
+        stage('Run Locally') {
+            steps {
+                echo 'Running Docker image locally...'
+                script {
+                    sh "docker run --rm ${IMAGE_NAME}"
+                }
+            }
+        }
+    }
+}
+
