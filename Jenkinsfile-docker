@@ -2,25 +2,28 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026' // Update this if your credentials ID is different
+        DOCKERHUB_CREDENTIALS = credentials('e2271c88-914b-4070-8dfc-6570573a2026') // Replace with your Jenkins credentials ID if different
     }
 
     stages {
+
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/athulv/java11-examples.git'
+                git url: 'https://github.com/athulv/java11-examples.git'
             }
         }
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean package'
+                dir('java11-examples') {
+                    sh 'mvn clean package'
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
+                dir('java11-examples') {
                     sh 'docker build -t athulvtk/java11-examples .'
                 }
             }
@@ -29,7 +32,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: env.DOCKER_HUB_CREDENTIALS, url: '']) {
+                    withDockerRegistry([credentialsId: 'e2271c88-914b-4070-8dfc-6570573a2026', url: '']) {
                         sh 'docker push athulvtk/java11-examples'
                     }
                 }
