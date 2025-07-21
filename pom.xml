@@ -1,7 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"  
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">  
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.biezhi</groupId>
@@ -10,7 +11,6 @@
     <packaging>jar</packaging>
 
     <name>java11-examples</name>
-    <description>Java 11 Examples Project</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -18,15 +18,6 @@
     </properties>
 
     <dependencies>
-
-        <!-- Gson for JSON parsing -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.6</version>
-        </dependency>
-
-        <!-- JUnit 5 for testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -34,6 +25,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -41,7 +37,6 @@
 
             <!-- Compiler Plugin -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
@@ -50,18 +45,29 @@
                 </configuration>
             </plugin>
 
-            <!-- Jar Plugin to set Main-Class -->
+            <!-- Assembly Plugin to create Fat JAR -->
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
                             <mainClass>io.github.biezhi.java11.http.Example</mainClass>
                         </manifest>
                     </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
