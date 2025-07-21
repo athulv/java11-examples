@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026' // Replace with your Jenkins credential ID
+        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026' // Replace with your Jenkins credentials ID
         IMAGE_NAME = 'athulvtk/java11-examples'
     }
 
@@ -21,9 +21,11 @@ pipeline {
 
         stage('Prepare Docker Context') {
             steps {
-                sh 'mkdir -p docker-build'
-                sh 'cp Dockerfile docker-build/'
-                sh 'cp target/java11-examples-1.0-SNAPSHOT-jar-with-dependencies.jar docker-build/app.jar'
+                sh '''
+                    mkdir -p docker-build
+                    cp Dockerfile docker-build/
+                    cp target/java11-examples-1.0-SNAPSHOT-jar-with-dependencies.jar docker-build/app.jar
+                '''
             }
         }
 
