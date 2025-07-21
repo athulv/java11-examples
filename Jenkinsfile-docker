@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'athulvtk/java11-examples'
+        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026' // Update this if your credentials ID is different
     }
 
     stages {
@@ -21,24 +21,24 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    sh 'docker build -t athulvtk/java11-examples .'
                 }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: 'e2271c88-914b-4070-8dfc-6570573a2026', url: '']) {
-                    sh "docker push ${DOCKER_IMAGE}"
+                script {
+                    withDockerRegistry([credentialsId: env.DOCKER_HUB_CREDENTIALS, url: '']) {
+                        sh 'docker push athulvtk/java11-examples'
+                    }
                 }
             }
         }
 
         stage('Run Locally') {
             steps {
-                script {
-                    sh "docker run --rm ${DOCKER_IMAGE}"
-                }
+                sh 'docker run --rm athulvtk/java11-examples'
             }
         }
     }
