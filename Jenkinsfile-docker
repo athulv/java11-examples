@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'athulvtk/java11-docker-example:latest'
-        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026'
+//        DOCKER_HUB_CREDENTIALS = 'e2271c88-914b-4070-8dfc-6570573a2026'
     }
 
     stages {
