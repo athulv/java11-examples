@@ -18,15 +18,11 @@ pipeline {
             }
         }
 
-        stage('Build with Maven') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME} ."
+                script {
+                    docker.build("${IMAGE_NAME}")
+                }
             }
         }
 
@@ -42,7 +38,9 @@ pipeline {
 
         stage('Run Locally') {
             steps {
-                sh "docker run ${IMAGE_NAME}"
+                script {
+                    sh "docker run --rm ${IMAGE_NAME}"
+                }
             }
         }
     }
