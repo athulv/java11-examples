@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        def image = docker.build("${DOCKER_IMAGE}", "${WORKSPACE}")
+                        def image = docker.build("${DOCKER_IMAGE}", ".")
                         image.push()
                     }
                 }
