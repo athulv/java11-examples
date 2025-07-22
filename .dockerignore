@@ -1,5 +1,4 @@
 .git
-target/
 *.md
 *.log
 test/
