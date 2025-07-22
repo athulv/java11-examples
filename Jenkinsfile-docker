@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'athulvtk/java11-examples'
+        IMAGE_NAME = "athulvtk/java11-examples"
+        REGISTRY_CREDENTIALS = "e2271c88-914b-4070-8dfc-6570573a2026"
     }
 
     stages {
@@ -12,16 +13,10 @@ pipeline {
             }
         }
 
-        stage('Build with Maven') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(DOCKER_IMAGE)
+                    docker.build("${IMAGE_NAME}")
                 }
             }
         }
@@ -29,8 +24,8 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'e2271c88-914b-4070-8dfc-6570573a2026') {
-                        docker.image(DOCKER_IMAGE).push('latest')
+                    docker.withRegistry('', "${REGISTRY_CREDENTIALS}") {
+                        docker.image("${IMAGE_NAME}").push("latest")
                     }
                 }
             }
@@ -38,8 +33,11 @@ pipeline {
 
         stage('Run Locally') {
             steps {
-                sh 'docker run --rm athulvtk/java11-examples'
+                script {
+                    sh "docker run ${IMAGE_NAME}"
+                }
             }
         }
     }
 }
+
