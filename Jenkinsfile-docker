@@ -15,16 +15,20 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean package'
+                dir('docker-java11-example') {
+                    sh 'mvn clean package'
+                }
             }
         }
 
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        def image = docker.build("${DOCKER_IMAGE}", ".")
-                        image.push()
+                    dir('docker-java11-example') {
+                        docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
+                            def image = docker.build("${DOCKER_IMAGE}", ".")
+                            image.push()
+                        }
                     }
                 }
             }
