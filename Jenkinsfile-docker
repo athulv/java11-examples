@@ -13,6 +13,12 @@ pipeline {
             }
         }
 
+        stage('Build Java Project') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -34,9 +40,10 @@ pipeline {
         stage('Run Locally') {
             steps {
                 script {
-                    sh "docker run ${IMAGE_NAME}"
+                    sh "docker run --rm ${IMAGE_NAME}"
                 }
             }
         }
     }
 }
+
