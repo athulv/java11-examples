@@ -6,12 +6,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build with Maven') {
             steps {
                 sh 'mvn clean package'
@@ -21,9 +15,10 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
+                    docker.build("${IMAGE_NAME}").push()
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-                        sh "docker build -t ${IMAGE_NAME} ."
-                        sh "docker push ${IMAGE_NAME}"
+                        def dockerImage = docker.image("${IMAGE_NAME}")
+                        dockerImage.push()
                     }
                 }
             }
@@ -31,7 +26,7 @@ pipeline {
 
         stage('Run Container (Demo)') {
             steps {
-                sh "docker run --rm ${IMAGE_NAME}"
+                sh 'docker run --rm ${IMAGE_NAME}'
             }
         }
     }
