@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "athulvtk/java11-docker-example:latest"
-        DOCKER_CREDENTIALS_ID = "e2271c88-914b-4070-8dfc-6570573a2026"
+        IMAGE_NAME = "athulvtk/java11-docker-example:latest"
     }
 
     stages {
-        stage('Clone Repo') {
+
+        stage('Checkout') {
             steps {
-                git 'https://github.com/athulv/java11-examples.git'
+                checkout scm
             }
         }
 
@@ -22,19 +22,20 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        def image = docker.build("${DOCKER_IMAGE}", ".")
-                        image.push()
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        sh """
+                        docker build -t ${IMAGE_NAME} .
+                        docker push ${IMAGE_NAME}
+                        """
                     }
                 }
             }
         }
 
-        stage('Run Container (Demo)') {
+        stage('Test Container Run') {
             steps {
-                sh "docker run --rm ${DOCKER_IMAGE} || echo 'Container exited with non-zero status (likely WSL2 limitation)'"
+                sh 'docker run --rm ${IMAGE_NAME}'
             }
         }
     }
 }
-
