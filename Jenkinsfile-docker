@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "athulvtk/java11-docker-example:latest"
+        DOCKER_IMAGE = "athulvtk/java11-docker-example"
         DOCKER_CREDENTIALS_ID = "e2271c88-914b-4070-8dfc-6570573a2026"  // Replace if your ID is different
     }
 
