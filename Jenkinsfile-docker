@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.8.8-openjdk-11'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         IMAGE_NAME = "athulvtk/java11-examples"
@@ -13,7 +18,7 @@ pipeline {
             }
         }
 
-        stage('Build Java Project') {
+        stage('Build with Maven') {
             steps {
                 sh 'mvn clean package'
             }
@@ -40,7 +45,7 @@ pipeline {
         stage('Run Locally') {
             steps {
                 script {
-                    sh "docker run --rm ${IMAGE_NAME}"
+                    sh "docker run ${IMAGE_NAME}"
                 }
             }
         }
