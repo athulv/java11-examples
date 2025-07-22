@@ -8,16 +8,17 @@ pipeline {
     stages {
         stage('Build with Maven') {
             steps {
+                echo 'Running Maven Build...'
                 sh 'mvn clean package'
             }
         }
 
         stage('Build & Push Docker Image') {
             steps {
+                echo 'Building and Pushing Docker Image...'
                 script {
-                    docker.build("${IMAGE_NAME}").push()
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-                        def dockerImage = docker.image("${IMAGE_NAME}")
+                        def dockerImage = docker.build("${IMAGE_NAME}")
                         dockerImage.push()
                     }
                 }
@@ -26,7 +27,8 @@ pipeline {
 
         stage('Run Container (Demo)') {
             steps {
-                sh 'docker run --rm ${IMAGE_NAME}'
+                echo 'Running Docker Container...'
+                sh 'docker run --rm athulvtk/java11-docker-example:latest'
             }
         }
     }
